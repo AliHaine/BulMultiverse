@@ -12,7 +12,7 @@ public class BaseBmvCommand extends BaseCommand {
     /*
      * All commands must use this variable as the root alias.
      */
-    public static final String commandRootAlias = "bmv|bulmv|bulmultiverse";
+    public static final String commandRootAlias = "mv|bmv|bulmv|bulmultiverse";
 
     @Default
     public void onDefault(CommandSender sender) {
