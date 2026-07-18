@@ -3,6 +3,7 @@ package com.alihaine.bulmultiverse.file;
 import com.alihaine.bulmultiverse.BulMultiverse;
 import com.alihaine.bulmultiverse.world.WorldData;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -71,8 +72,18 @@ public class WorldsFile {
     }
 
     public boolean isWorldFolderExisting(String worldName) {
+        System.out.println(Bukkit.getServer().getWorldContainer().getPath());
         File worldFolder = new File(Bukkit.getServer().getWorldContainer(), worldName);
-        return worldFolder.exists() && worldFolder.isDirectory();
+        if (worldFolder.exists() && worldFolder.isDirectory()) return true;
+
+        //For minecraft versions where worlds are in the folder 'dimensions'
+        for (World world : Bukkit.getServer().getWorlds()) {
+            worldFolder = world.getWorldFolder().getParentFile();
+            File nestedWorldFolder = new File(worldFolder, worldName);
+            if (nestedWorldFolder.exists() && nestedWorldFolder.isDirectory()) return true;
+        }
+
+        return false;
     }
 
     private void loadDefaultWorld() {

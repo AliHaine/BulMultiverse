@@ -5,10 +5,11 @@ import co.aikar.commands.annotation.*;
 import com.alihaine.bulmultiverse.BulMultiverse;
 import com.alihaine.bulmultiverse.world.WorldData;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CommandAlias(BaseBmvCommand.commandRootAlias)
@@ -29,10 +30,17 @@ public class ListCommand extends BaseCommand {
 
     private void displayWorlds(CommandSender commandSender, Set<String> loadedWorlds) {
         File worldContainer = Bukkit.getWorldContainer();
-        File[] worldFolders = worldContainer.listFiles();
+        Set<File> worldFolders = new LinkedHashSet<>();
 
-        if (worldFolders == null)
-            return;
+        File[] rootFiles = worldContainer.listFiles();
+        if (rootFiles != null) worldFolders.addAll(Arrays.asList(rootFiles));
+
+        //For minecraft versions where worlds are in the folder 'dimensions'
+        for (World world : Bukkit.getServer().getWorlds()) {
+            File[] dimensionFiles = world.getWorldFolder().getParentFile().listFiles();
+            if (dimensionFiles != null) worldFolders.addAll(Arrays.asList(dimensionFiles));
+        }
+
         for (File worldFolder : worldFolders) {
             //World will have at least one of these files.
             //The exact files depend on the server version and world type, and may differ.

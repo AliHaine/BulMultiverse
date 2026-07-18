@@ -9,7 +9,7 @@
     <name>BulMultiverse</name>
     <description>BulMultiverse is a Minecraft plugin, ultra light and optimized world manager</description>
     <url>https://github.com/BulPlugins/BulMultiverse</url>
-    <version>1.3</version>
+    <version>1.4</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -32,6 +32,10 @@
         <repository>
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
