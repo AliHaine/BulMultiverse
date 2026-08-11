@@ -66,13 +66,11 @@ public class WorldsFile {
             }
 
             WorldData worldData = new WorldData(fileConfiguration.getConfigurationSection("worlds." + worldName));
-            worldData.createWorld(Bukkit.getConsoleSender());
-            saveWorldDataToFile(worldData);
+            worldData.createWorld(Bukkit.getConsoleSender()).thenAccept(this::saveWorldDataToFile);
         }
     }
 
     public boolean isWorldFolderExisting(String worldName) {
-        System.out.println(Bukkit.getServer().getWorldContainer().getPath());
         File worldFolder = new File(Bukkit.getServer().getWorldContainer(), worldName);
         if (worldFolder.exists() && worldFolder.isDirectory()) return true;
 

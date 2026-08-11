@@ -44,7 +44,7 @@ public class CreateCommand extends BaseCommand {
         }
 
         WorldData worldData = new WorldData(worldName, convertToOptionString);
-        worldData.createWorld(sender);
-        BulMultiverse.getWorldsFile().saveWorldDataToFile(worldData);
+        worldData.createWorld(sender).thenAccept(
+                BulMultiverse.getWorldsFile()::saveWorldDataToFile);
     }
 }

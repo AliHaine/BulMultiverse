@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class WorldData {
     private final String worldName;
@@ -34,7 +35,7 @@ public class WorldData {
         });
     }
 
-    public void createWorld(CommandSender sender) {
+    public CompletableFuture<WorldData> createWorldAsync(CommandSender sender) {
         WorldCreator newWorldCreator = new WorldCreator(this.getWorldName());
 
         Map<WorldOption, Object> options = new HashMap<>(optionsAndValue);
@@ -57,28 +58,34 @@ public class WorldData {
             iterator.remove();
         }
 
-        newWorldCreator.createWorld();
+        return BulMultiverse.getWorldLoader().loadWorld(newWorldCreator).thenApply(world -> {
+            if (world == null)
+                throw new IllegalStateException("The world loader returned null for " + worldName);
 
-        iterator = options.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<WorldOption, Object> entry = iterator.next();
-            try {
-                entry.getKey().optionExecutor(entry.getValue().toString(), this);
-            } catch (Exception exception) {
-                new Message("error_world_creator").sendMessage(sender);
-                optionsError.put(entry.getKey(), entry.getValue());
+            Iterator<Map.Entry<WorldOption, Object>> worldOptionsIterator = options.entrySet().iterator();
+            while (worldOptionsIterator.hasNext()) {
+                Map.Entry<WorldOption, Object> entry = worldOptionsIterator.next();
+                try {
+                    entry.getKey().optionExecutor(entry.getValue().toString(), this);
+                } catch (Exception exception) {
+                    new Message("error_world_creator").sendMessage(sender);
+                    optionsError.put(entry.getKey(), entry.getValue());
+                }
+                worldOptionsIterator.remove();
             }
-            iterator.remove();
-        }
 
-        setAllNotSetOptions();
+            setAllNotSetOptions();
 
-        optionsError.forEach((key, value) -> {
-            optionsAndValue.put(key, key.getDefaultValue(getWorld()));
+            optionsError.forEach((key, value) ->
+                    optionsAndValue.put(key, key.getDefaultValue(getWorld())));
+
+            worldDataManager.addNewWorldData(this);
+            new Message("cmd_load_success").withPlaceHolder("name", worldName).sendMessage(sender);
+            return this;
+        }).whenComplete((worldData, throwable) -> {
+            if (throwable != null)
+                new Message("error_world_creator").sendMessage(sender);
         });
-
-        worldDataManager.addNewWorldData(this);
-        new Message("cmd_load_success").withPlaceHolder("name", worldName).sendMessage(sender);
     }
 
     private void setAllNotSetOptions() {

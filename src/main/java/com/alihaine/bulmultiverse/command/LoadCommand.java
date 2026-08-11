@@ -32,7 +32,7 @@ public class LoadCommand extends BaseCommand {
             options.put(BulMultiverse.getWorldOptionManager().getOption("-e"), "the_end");
 
         WorldData worldData = new WorldData(targetWorld, options);
-        worldData.createWorld(sender);
-        BulMultiverse.getWorldsFile().saveWorldDataToFile(worldData);
+        worldData.createWorld(sender).thenAccept(
+                BulMultiverse.getWorldsFile()::saveWorldDataToFile);
     }
 }

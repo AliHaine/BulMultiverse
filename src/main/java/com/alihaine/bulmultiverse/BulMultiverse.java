@@ -7,7 +7,9 @@ import com.alihaine.bulmultiverse.addon.BulMultiverseAddon;
 import com.alihaine.bulmultiverse.command.*;
 import com.alihaine.bulmultiverse.file.ConfigFile;
 import com.alihaine.bulmultiverse.file.WorldsFile;
+import com.alihaine.bulmultiverse.world.BukkitWorldLoader;
 import com.alihaine.bulmultiverse.world.WorldDataManager;
+import com.alihaine.bulmultiverse.world.WorldLoader;
 import com.alihaine.bulmultiverse.world.WorldOptionManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,7 +29,7 @@ public class BulMultiverse extends JavaPlugin {
     private static WorldDataManager worldDataManager;
     private static AddonManager addonManager;
     private static PaperCommandManager commandManager;
-
+    private static WorldLoader worldLoader = new BukkitWorldLoader();
 
     @Override
     public void onEnable() {
@@ -107,6 +109,20 @@ public class BulMultiverse extends JavaPlugin {
     }
 
     public static AddonManager getAddonManager() { return addonManager; }
+
+    public static WorldLoader getWorldLoader() {
+        return worldLoader;
+    }
+
+    /**
+     * Allows an addon to replace the default Bukkit world loading mechanism.
+     * This should be called from {@link BulMultiverseAddon#onEnable()}.
+     */
+    public static void setWorldLoader(WorldLoader worldLoader) {
+        if (worldLoader == null)
+            throw new IllegalArgumentException("WorldLoader cannot be null");
+        BulMultiverse.worldLoader = worldLoader;
+    }
 
     /*
      * Addons must use this function to register additional commands.

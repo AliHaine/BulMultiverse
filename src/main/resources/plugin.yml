@@ -4,3 +4,4 @@ description: ${project.description}
 author: AliHaine
 main: com.alihaine.bulmultiverse.BulMultiverse
 api-version: 1.13
+folia-supported: true
