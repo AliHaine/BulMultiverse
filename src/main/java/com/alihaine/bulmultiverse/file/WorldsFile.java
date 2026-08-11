@@ -66,7 +66,7 @@ public class WorldsFile {
             }
 
             WorldData worldData = new WorldData(fileConfiguration.getConfigurationSection("worlds." + worldName));
-            worldData.createWorld(Bukkit.getConsoleSender()).thenAccept(this::saveWorldDataToFile);
+            worldData.createWorldAsync(Bukkit.getConsoleSender()).thenAccept(this::saveWorldDataToFile);
         }
     }
 
